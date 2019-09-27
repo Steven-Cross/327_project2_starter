@@ -14,7 +14,8 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <ssteam>
+#include <sstream>
+
 //============================================================================
 
 //============================================================================
@@ -22,10 +23,11 @@
 const int EMPTY_ARRAY_SIZE = 0;
 const int FIRST_TIME_SEEN = 1;
 const int NO_VALUE = -1;
+
 //============================================================================
 //TODO define a structure to track words and number of times they occur
 struct entry {
-	st::string word;
+	std::string word;
 	int num_occurances;
 };
 
@@ -69,9 +71,13 @@ int getArrayWord_NumbOccur_At(int i){
 
 /*Keep track of how many times each token seen*/
 void processToken(std::string &token){
-	if (strip_unwanted_chars(token) {
-		for (int i = EMPTY_ARRAY_SIZE; i < array_size; i++) {
-			if (utilities::toUpper(token) == myEntryArray[i].word) {
+	if (strip_unwanted_chars(token)) {
+		for (int i = 0; i < array_size; i++) {
+			std::string temp1 = token;
+			std::string temp2 = myEntryArray[i].word;
+			toUpper(temp1);
+			toUpper(temp2);
+			if (temp1 == temp2) {
 				myEntryArray[i].num_occurances++;
 			}
 			return;
@@ -103,7 +109,7 @@ bool processFile(std::fstream &myfstream){
 	if (!myfstream.is_open()) {
 		return false;
 	}
-	std:string line;
+	std::string line;
 	while (!myfstream.eof()) {
 		getline(myfstream, line);
 		processLine(line);
@@ -115,14 +121,14 @@ bool processFile(std::fstream &myfstream){
   in this case Project2 with the .project and .cProject files*/
 bool openFile(std::fstream &myfile, const std::string &myFileName, 
 		std::ios_base::openmode mode) {
-	myFile.open(myFileName.c.str(), mode);
-	return myFile.is_open();
+	myfile.open(myFileName.c_str(), mode);
+	return myfile.is_open();
 }
 
 /*iff myfile is open then close it*/
 void closeFile(std::fstream &myfile){
-	if (myFile.is_open()) { 
-		myFile.close();
+	if (myfile.is_open()) {
+		myfile.close();
 	}
 }
 
@@ -139,15 +145,15 @@ int writeArraytoFile(const std::string &outputfilename){
 	std::ofstream myOutputFile;
 	myOutputFile.open(outputfilename.c_str());
 
-	if (!outputfilename.is_open()) {
+	if (!myOutputFile.is_open()) {
 		return constants::FAIL_FILE_DID_NOT_OPEN;
 	}
 	
-	for (i = EMPTY_ARRAY_SIZE; i < array_size; i++) { 
+	for ( int i = EMPTY_ARRAY_SIZE; i < array_size; i++) {
 		myOutputFile << myEntryArray[i].word << " " << myEntryArray[i].num_occurances << std::endl;
 	}
 	myOutputFile.close();
-	return constansts::SUCCESS;
+	return constants::SUCCESS;
 }
 
 /*
