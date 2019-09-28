@@ -22,7 +22,7 @@
 //	stuff you will need
 const int EMPTY_ARRAY_SIZE = 0;
 const int FIRST_TIME_SEEN = 1;
-const int NO_VALUE = -1;
+const int NO_OCCURANCES = -1;
 
 //============================================================================
 struct entry {
@@ -47,7 +47,7 @@ int getArraySize(){
 //get data at a particular location
 std::string getArrayWordAt(int i){
 	std::string word_at_i = " ";
-	if (i <= array_size) {
+	if (i < array_size) {
 		word_at_i = myEntryArray[i].word;
 	}
 	return word_at_i;
@@ -55,8 +55,8 @@ std::string getArrayWordAt(int i){
 
 //get data at a particular location
 int getArrayWord_NumbOccur_At(int i){
-	int num_of_occ = NO_VALUE;//no magic numbers
-	if (i <= array_size) {
+	int num_of_occ = NO_OCCURANCES;
+	if (i < array_size) {
 		num_of_occ = myEntryArray[i].num_occurances;
 	}
 	return num_of_occ;
@@ -72,13 +72,13 @@ void processToken(std::string &token){
 			toUpper(temp2);
 			if (temp1 == temp2) {
 				myEntryArray[i].num_occurances++;
+				return;
 			}
-			return;
 		}
-	entry newWord;
-	newWord.word = token;
-	newWord.num_occurances = FIRST_TIME_SEEN;
-	myEntryArray[array_size] = newWord;
+	entry new_entry;
+	new_entry.word = token;
+	new_entry.num_occurances = FIRST_TIME_SEEN;
+	myEntryArray[array_size] = new_entry;
 	array_size++;
 	}
 }
@@ -101,13 +101,14 @@ void processLine(std::string &myString){
 bool processFile(std::fstream &myfstream){
 	if (!myfstream.is_open()) {
 		return false;
-	}
-	std::string line;
-	while (!myfstream.eof()) {
-		getline(myfstream, line);
-		processLine(line);
-	} 
+	} else {
+		std::string line;
+		while (!myfstream.eof()) {
+			getline(myfstream, line);
+			processLine(line);
+		}
 	return true;
+	}
 }
 
 /*if you are debugging the file must be in the project parent directory
@@ -123,6 +124,7 @@ void closeFile(std::fstream &myfile){
 	if (myfile.is_open()) {
 		myfile.close();
 	}
+	return;
 }
 
 /* serializes all content in myEntryArray to file outputfilename
@@ -131,7 +133,7 @@ void closeFile(std::fstream &myfile){
  * 			SUCCESS if all data is written and outputfilename closes OK
  * */
 int writeArraytoFile(const std::string &outputfilename){
-	if (array_size == 0) {
+	if (array_size == EMPTY_ARRAY_SIZE) {
 		return constants::FAIL_NO_ARRAY_DATA;
 	}
 
@@ -142,7 +144,7 @@ int writeArraytoFile(const std::string &outputfilename){
 		return constants::FAIL_FILE_DID_NOT_OPEN;
 	}
 	
-	for ( int i = EMPTY_ARRAY_SIZE; i < array_size; i++) {
+	for ( int i = 0; i < array_size; i++) {
 		myOutputFile << myEntryArray[i].word << " " << myEntryArray[i].num_occurances << std::endl;
 	}
 	myOutputFile.close();
@@ -168,7 +170,7 @@ void sortArray(constants::sortOrder so){
 					std::string temp2 = myEntryArray[j - 1].word;
 					toUpper(temp1);
 					toUpper(temp2);
-					if(temp1 > temp2) {
+					if(temp1 < temp2) {
 						temp_entry = myEntryArray[j];
 						myEntryArray[j] = myEntryArray[j - 1];
 						myEntryArray[j-1] = temp_entry;
@@ -179,30 +181,30 @@ void sortArray(constants::sortOrder so){
 
 		case constants::sortOrder::DESCENDING:
 			for (i = 1; i < array_size; i++) {
-							for (j = i; j > 0; j--) {
-								std::string temp1 = myEntryArray[j].word;
-								std::string temp2 = myEntryArray[j - 1].word;
-								toUpper(temp1);
-								toUpper(temp2);
-								if(temp1 < temp2) {
-									temp_entry = myEntryArray[j];
-									myEntryArray[j] = myEntryArray[j - 1];
-									myEntryArray[j-1] = temp_entry;
-								}
-							}
-						}
+				for (j = i; j > 0; j--) {
+					std::string temp1 = myEntryArray[j].word;
+					std::string temp2 = myEntryArray[j - 1].word;
+					toUpper(temp1);
+					toUpper(temp2);
+					if(temp1 > temp2) {
+						temp_entry = myEntryArray[j];
+						myEntryArray[j] = myEntryArray[j - 1];
+						myEntryArray[j-1] = temp_entry;
+					}
+				}
+			}
 			break;
 
 		case constants::sortOrder::NUMBER_OCCURRENCES:
 			for (i = 1; i < array_size; i++) {
-							for (j = i; j > 0; j--) {
-								if(myEntryArray[j].num_occurances < myEntryArray[j - 1].num_occurances) {
-									temp_entry = myEntryArray[j];
-									myEntryArray[j] = myEntryArray[j - 1];
-									myEntryArray[j-1] = temp_entry;
-								}
-							}
-						}
+				for (j = i; j > 0; j--) {
+					if(myEntryArray[j].num_occurances < myEntryArray[j - 1].num_occurances) {
+						temp_entry = myEntryArray[j];
+						myEntryArray[j] = myEntryArray[j - 1];
+						myEntryArray[j-1] = temp_entry;
+					}
+				}
+			}
 			break;
 
 		case constants::sortOrder::NONE:
