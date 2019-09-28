@@ -1,12 +1,12 @@
 /*
  * functionstocomplete.cpp
  *
- *  Updated on on: Sep 24th, 2019
+ *  Updated on on: Sep 28th, 2019
  *      Author: Steven
  */
 
 //============================================================================
-//	TODO add necessary includes here
+
 #include "array_functions.h"
 #include "constants.h"
 #include "utilities.h"
@@ -25,21 +25,14 @@ const int FIRST_TIME_SEEN = 1;
 const int NO_VALUE = -1;
 
 //============================================================================
-//TODO define a structure to track words and number of times they occur
 struct entry {
 	std::string word;
 	int num_occurances;
 };
 
-//TODO add a global array of entry structs (global to this file)
-
 entry myEntryArray[constants::MAX_WORDS];
 
-//TODO add variable to keep track of next available slot in array
-
 int array_size = EMPTY_ARRAY_SIZE;
-
-//TODO define all functions in header file
 //============================================================================
 //zero out array that tracks words and their occurrences
 void clearArray() {
@@ -162,6 +155,60 @@ int writeArraytoFile(const std::string &outputfilename){
  * The presence of the enum implies a switch statement based on its value
  */
 void sortArray(constants::sortOrder so){
+	int i;
+	int j;
+	entry temp_entry;
+
+	switch (so) {
+
+		case constants::sortOrder::ASCENDING:
+			for (i = 1; i < array_size; i++) {
+				for (j = i; j > 0; j--) {
+					std::string temp1 = myEntryArray[j].word;
+					std::string temp2 = myEntryArray[j - 1].word;
+					toUpper(temp1);
+					toUpper(temp2);
+					if(temp1 > temp2) {
+						temp_entry = myEntryArray[j];
+						myEntryArray[j] = myEntryArray[j - 1];
+						myEntryArray[j-1] = temp_entry;
+					}
+				}
+			}
+			break;
+
+		case constants::sortOrder::DESCENDING:
+			for (i = 1; i < array_size; i++) {
+							for (j = i; j > 0; j--) {
+								std::string temp1 = myEntryArray[j].word;
+								std::string temp2 = myEntryArray[j - 1].word;
+								toUpper(temp1);
+								toUpper(temp2);
+								if(temp1 < temp2) {
+									temp_entry = myEntryArray[j];
+									myEntryArray[j] = myEntryArray[j - 1];
+									myEntryArray[j-1] = temp_entry;
+								}
+							}
+						}
+			break;
+
+		case constants::sortOrder::NUMBER_OCCURRENCES:
+			for (i = 1; i < array_size; i++) {
+							for (j = i; j > 0; j--) {
+								if(myEntryArray[j].num_occurances < myEntryArray[j - 1].num_occurances) {
+									temp_entry = myEntryArray[j];
+									myEntryArray[j] = myEntryArray[j - 1];
+									myEntryArray[j-1] = temp_entry;
+								}
+							}
+						}
+			break;
+
+		case constants::sortOrder::NONE:
+		default:
+			break;
+	}
 	return;
 }
 //===========================================================================
